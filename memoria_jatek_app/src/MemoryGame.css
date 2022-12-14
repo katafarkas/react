@@ -1,0 +1,24 @@
+.cards {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.cards .row {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.cards .row .card-holder {
+    flex: 25%;
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+.cards .row .card-holder button {
+    background-color: white;
+    border: none;
+    cursor: pointer;
+}
