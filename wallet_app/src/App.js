@@ -8,6 +8,8 @@ import Page404 from "./page/Page404";
 import OneWallet from "./page/OneWallet";
 import WalletAppBar from "./components/WalletAppBar";
 import NewWallet from "./page/NewWallet";
+import NewTransaction from "./page/NewTransaction";
+import EditTransaction from "./page/EditTransaction";
 
 function App() {
   return (
@@ -21,6 +23,16 @@ function App() {
           <Route path="/wallets" exact element={<Wallets />} />
           <Route path="/wallets/newwallet" exact element={<NewWallet />} />
           <Route path="/wallets/wallet/:id" exact element={<OneWallet />} />
+          <Route
+            path="/wallets/wallet/:id/newtransaction"
+            exact
+            element={<NewTransaction />}
+          />
+          <Route
+            path="/wallets/wallet/:id/edittransaction/:id"
+            exact
+            element={<EditTransaction />}
+          />
           <Route path="*" element={<Page404 />} />
         </Routes>
       </BrowserRouter>
