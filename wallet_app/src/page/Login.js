@@ -4,17 +4,21 @@ import { TextField } from "formik-mui";
 import { useState } from "react";
 import CheckIcon from "@mui/icons-material/Check";
 import { useNavigate } from "react-router-dom";
+import { AXIOS_METHOD, doApiCall } from "../hooks/useApi";
+import { useAuth } from "../hooks/useAuth";
+import { useEffect } from "react";
 
 function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const { handleLoginResult, logout } = useAuth();
+
+  useEffect(() => {
+    logout()
+  }, [logout])
 
   function handleShowPassword(value) {
     setShowPassword(value);
-  }
-
-  function handleLogin() {
-    navigate("/wallets")
   }
 
   return (
@@ -25,10 +29,20 @@ function Login() {
         </Grid>
         <Grid item xs={12}>
           <Formik
+            onSubmit={(value, { setFieldError, setSubmitting }) => {
+              setSubmitting(true);
+              doApiCall(AXIOS_METHOD.POST, '/login', (data) => {
+                handleLoginResult(data);
+                setSubmitting(false);
+                navigate('/wallets')
+              }, (apiError) => {
+                setFieldError('password', apiError);
+                setSubmitting(false);
+              }, value);
+            }}
             initialValues={{
-              username: "",
-              password: "",
-              checkme: showPassword,
+              name: "",
+              password: ""
             }}
           >
             <Form>
@@ -40,7 +54,7 @@ function Login() {
               >
                 <Grid item xs={12}>
                   <Field
-                    name="username"
+                    name="name"
                     type="text"
                     label={"Felhasználónév"}
                     component={TextField}
@@ -56,7 +70,7 @@ function Login() {
                 </Grid>
                 <Grid item xs={12}>
                   <Field
-                    name="checkme"
+                    name="show-password"
                     type="checkbox"
                     validate={handleShowPassword}
                   ></Field>
@@ -64,7 +78,6 @@ function Login() {
                 </Grid>
                 <Grid item xs={12}>
                   <Button
-                    onClick={handleLogin}
                     type="submit"
                     color="primary"
                     variant={"contained"}

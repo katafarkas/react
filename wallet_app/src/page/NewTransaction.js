@@ -2,13 +2,13 @@ import { Button, Container, Grid } from "@mui/material";
 import { Field, Form, Formik } from "formik";
 import { TextField } from "formik-mui";
 import CheckIcon from "@mui/icons-material/Check";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { AXIOS_METHOD, doApiCall } from "../hooks/useApi";
 
-function NewTransaction() {
+function NewTransaction(refetch) {
   const navigate = useNavigate();
-  function addTransaction() {
-    navigate("/wallets/wallet/:id");
-  }
+  const { id } = useParams();
+
   return (
     <Container sx={{ display: "flex", alignItems: "center", mt: 5 }}>
       <Grid container justifyContent={"center"} textAlign={"center"}>
@@ -21,6 +21,23 @@ function NewTransaction() {
               title: "",
               value: "",
               date: "",
+            }}
+            onSubmit={(value, { setFieldError, setSubmitting }) => {
+              setSubmitting(true);
+              let requestData = {
+                wallet_id: id,
+                title: value.title,
+                amount: value.value
+              }
+
+              const onFailure = (apiError) => {
+                setFieldError('title', apiError);
+                setSubmitting(false);
+              };
+
+              doApiCall(AXIOS_METHOD.PUT, '/transactions', (data) => {
+                navigate(`/wallets/wallet/${id}`);
+              }, onFailure, requestData);
             }}
           >
             <Form>
@@ -40,14 +57,6 @@ function NewTransaction() {
                 </Grid>
                 <Grid item xs={12}>
                   <Field
-                    name="date"
-                    type="text"
-                    label={"Dátum"}
-                    component={TextField}
-                  ></Field>
-                </Grid>
-                <Grid item xs={12}>
-                  <Field
                     name="value"
                     type="number"
                     label={"Összeg"}
@@ -56,7 +65,6 @@ function NewTransaction() {
                 </Grid>
                 <Grid item xs={12}>
                   <Button
-                    onClick={addTransaction}
                     type="submit"
                     color="primary"
                     variant={"contained"}

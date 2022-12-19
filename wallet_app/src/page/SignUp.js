@@ -3,15 +3,22 @@ import { useState } from "react";
 import { Field, Form, Formik } from "formik";
 import { TextField } from "formik-mui";
 import CheckIcon from "@mui/icons-material/Check";
-
-function Successful() {
-  return <Typography variant={"h5"}>Registration is successful</Typography>;
-}
+import { doApiCall, AXIOS_METHOD } from "../hooks/useApi";
+import { useAuth } from "../hooks/useAuth";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 function SignUp() {
   const [password, setPassword] = useState();
-  const [successful, setSuccessful] = useState();
+  const [termsAccept, setTermsAccept] = useState();
   const [showPassword, setShowPassword] = useState(false);
+  const { handleLoginResult } = useAuth()
+  const navigate = useNavigate();
+  const { logout } = useAuth()
+
+  useEffect(() => {
+    logout()
+  }, [logout])
 
   function usernameValidate(value) {
     if (!/^[a-zA-Z0-9]{3,20}$/.test(value)) {
@@ -42,14 +49,6 @@ function SignUp() {
     setShowPassword(value);
   }
 
-  function handleSubmit(values, formik) {
-    formik.setSubmitting(true);
-    setTimeout(() => {
-      console.log(values);
-      formik.setSubmitting(false);
-      setSuccessful(true);
-    }, 1000);
-  }
   return (
     <Container sx={{ display: "flex", alignItems: "center" }}>
       <Grid
@@ -64,21 +63,33 @@ function SignUp() {
         <Grid item container>
           <Formik
             initialValues={{
-              username: "",
+              name: "",
               email: "",
               password: "",
               password2: "",
-              checkme: showPassword,
+              showPawssword: showPassword,
             }}
-            onSubmit={(values, formik) => {
-              handleSubmit(values, formik);
+            onSubmit={(value, { setFieldError, setSubmitting }) => {
+              setSubmitting(true);
+              const onFailure = (apiError) => {
+                setFieldError('name', apiError);
+                setSubmitting(false);
+              };
+
+              doApiCall(AXIOS_METHOD.POST, '/reg', (_unusedRegData) => {
+                doApiCall(AXIOS_METHOD.POST, '/login', (data) => {
+                  handleLoginResult(data);
+                  setSubmitting(false);
+                  navigate('/wallets')
+                }, onFailure, value);
+              }, onFailure, value);
             }}
           >
             <Form>
               <Grid container spacing={2}>
                 <Grid item xs={12}>
                   <Field
-                    name="username"
+                    name="name"
                     type="text"
                     label={"Felhasználónév"}
                     validate={usernameValidate}
@@ -114,25 +125,26 @@ function SignUp() {
                 </Grid>
                 <Grid item xs={12}>
                   <Field
-                    name="checkme"
+                    name="showPawssword"
                     type="checkbox"
                     validate={handleShowPassword}
                   ></Field>
                   <Typography variant={"p"}>Jelszó megjelenítése </Typography>
                 </Grid>
                 <Grid item xs={12}>
-                  <Field name="checkme2" type="checkbox"></Field>
+                  <Field name="terms" type="checkbox" onClick={() => setTermsAccept(!termsAccept)}></Field>
                   <Typography variant={"p"}>
                     Elfogadom a feltételeket
                   </Typography>
                 </Grid>
                 <Grid item xs={12}>
-                  <Button type="submit" color="primary" variant={"contained"}>
-                    <CheckIcon />
-                  </Button>
-                </Grid>
-                <Grid item xs={12}>
-                  {successful ? <Successful /> : null}
+                  {!termsAccept ?
+                    <Button type="submit" color="primary" variant={"contained"} disabled>
+                      <CheckIcon />
+                    </Button> :
+                    <Button type="submit" color="primary" variant={"contained"}>
+                      <CheckIcon />
+                    </Button>}
                 </Grid>
               </Grid>
             </Form>

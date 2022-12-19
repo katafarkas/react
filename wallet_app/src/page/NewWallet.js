@@ -3,12 +3,15 @@ import { Field, Form, Formik } from "formik";
 import { TextField } from "formik-mui";
 import CheckIcon from "@mui/icons-material/Check";
 import { useNavigate } from "react-router-dom";
+import { doApiCall, AXIOS_METHOD } from "../hooks/useApi"
 
 function NewWallet() {
   const navigate = useNavigate();
 
-  function handleAddWallet() {
-    navigate("/wallets");
+  function titleValidate(value) {
+    if (value.length === 0) {
+      return "A wallet neve kötelező";
+    }
   }
 
   return (
@@ -20,8 +23,27 @@ function NewWallet() {
         <Grid item xs={12}>
           <Formik
             initialValues={{
-              title: "",
-              initialValue: "",
+              name: "",
+              balance: "",
+            }}
+            onSubmit={(value, { setFieldError, setSubmitting }) => {
+              setSubmitting(true);
+              const onFailure = (apiError) => {
+                setFieldError('text', apiError);
+                setSubmitting(false);
+              };
+
+              doApiCall(AXIOS_METHOD.PUT, '/wallet', (data) => {
+                const currentId = data.id
+                let requestData = {
+                  wallet_id: currentId,
+                  title: "Inicializálási tranzakció",
+                  amount: value.balance
+                }
+                doApiCall(AXIOS_METHOD.PUT, '/transactions', (data) => {
+                  navigate('/wallets');
+                }, onFailure, requestData);
+              }, onFailure, value);
             }}
           >
             <Form>
@@ -33,15 +55,16 @@ function NewWallet() {
               >
                 <Grid item xs={12}>
                   <Field
-                    name="title"
+                    name="name"
                     type="text"
                     label={"Név"}
+                    validate={titleValidate}
                     component={TextField}
                   ></Field>
                 </Grid>
                 <Grid item xs={12}>
                   <Field
-                    name="initialValue"
+                    name="balance"
                     type="number"
                     label={"Kezdő összeg"}
                     component={TextField}
@@ -49,7 +72,6 @@ function NewWallet() {
                 </Grid>
                 <Grid item xs={12}>
                   <Button
-                    onClick={handleAddWallet}
                     type="submit"
                     color="primary"
                     variant={"contained"}
@@ -62,7 +84,7 @@ function NewWallet() {
           </Formik>
         </Grid>
       </Grid>
-    </Container>
+    </Container >
   );
 }
 

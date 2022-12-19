@@ -10,10 +10,11 @@ import WalletAppBar from "./components/WalletAppBar";
 import NewWallet from "./page/NewWallet";
 import NewTransaction from "./page/NewTransaction";
 import EditTransaction from "./page/EditTransaction";
+import Providers from "./Providers";
 
 function App() {
   return (
-    <>
+    <Providers>
       <BrowserRouter>
         <WalletAppBar />
         <Routes>
@@ -29,14 +30,14 @@ function App() {
             element={<NewTransaction />}
           />
           <Route
-            path="/wallets/wallet/:id/edittransaction/:id"
+            path="/wallets/wallet/:id/edittransaction/:transactionId"
             exact
             element={<EditTransaction />}
           />
           <Route path="*" element={<Page404 />} />
         </Routes>
       </BrowserRouter>
-    </>
+    </Providers>
   );
 }
 

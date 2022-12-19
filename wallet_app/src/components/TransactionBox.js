@@ -8,19 +8,16 @@ import {
 } from "@mui/material";
 import CreateIcon from "@mui/icons-material/Create";
 import ClearIcon from "@mui/icons-material/Clear";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
-function TransactionBox({ name, date, value }) {
+function TransactionBox({ transactionId, name, date, value, handleDeleteTransaction }) {
   const navigate = useNavigate();
-  function handleNewTransaction() {
-    navigate("/wallets/wallet/:id/newtransaction");
-  }
+  const { id } = useParams();
+
   function handleEditTransaction() {
-    navigate("/wallets/wallet/:id/edittransaction/:id");
+    navigate(`/wallets/wallet/${id}/edittransaction/${transactionId}`);
   }
-  function handleDeleteTransaction() {
-    console.log("DELETE");
-  }
+
   return (
     <Card
       sx={{
@@ -49,7 +46,7 @@ function TransactionBox({ name, date, value }) {
         <IconButton onClick={handleEditTransaction}>
           <CreateIcon />
         </IconButton>
-        <IconButton onClick={handleDeleteTransaction}>
+        <IconButton onClick={() => handleDeleteTransaction(transactionId)} >
           <ClearIcon />
         </IconButton>
       </CardActions>

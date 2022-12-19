@@ -10,22 +10,18 @@ import {
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
-function WalletBox({ title, value, id }) {
+function WalletBox({ title, value, id, handleDeleteWallet }) {
   const navigate = useNavigate();
-
-  function handleDelete() {
-    console.log("DELETE WALLET");
-  }
 
   function handleSelect() {
     navigate(`/wallets/wallet/${id}`)
   }
 
   return (
-    <Card sx={{ width: 200, height: 180, m: 2 }}>
+    <Card sx={{ width: 250, height: 200, m: 2 }}>
       <CardHeader
         action={
-          <IconButton onClick={handleDelete} aria-label="settings">
+          <IconButton onClick={() => handleDeleteWallet(id)} aria-label="settings">
             <ClearIcon />
           </IconButton>
         }

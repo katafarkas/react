@@ -1,5 +1,5 @@
 import AddIcon from "@mui/icons-material/Add";
-import { Card, IconButton } from "@mui/material";
+import { Box, IconButton } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 function AddWalletBox() {
@@ -10,10 +10,10 @@ function AddWalletBox() {
   }
 
   return (
-    <Card
+    <Box
       sx={{
-        width: 200,
-        height: 180,
+        width: 250,
+        height: 200,
         m: 2,
         display: "flex",
         alignItems: "center",
@@ -21,10 +21,10 @@ function AddWalletBox() {
         cursor: "pointer",
       }}
     >
-      <IconButton onClick={handleAddWallet}>
-        <AddIcon />
+      <IconButton sx={{ width: 80, height: 80, border: "1px solid" }} color="primary" onClick={handleAddWallet}>
+        <AddIcon fontSize="40" />
       </IconButton>
-    </Card>
+    </Box>
   );
 }
 
